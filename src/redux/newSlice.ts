@@ -1,28 +1,38 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { getNews } from "../services/api.services";
-import { NewsArticle } from "../types/newsArticle";
+import { NewsArticle, NewsState } from "../types/newsArticle";
+import { RootState } from "./store";
 
-interface NewsState {
-  articles: NewsArticle[];
-  loading: boolean;
-  error: string | null;
-}
 
 const initialState: NewsState = {
   articles: [],
   loading: false,
   error: null,
+  searchText: undefined,
+  currentPage: 1,
 };
 
-export const fetchNews = createAsyncThunk("news/fetchNews", async () => {
-  const response = await getNews();
-  return response.data.articles;
-});
+export const fetchNews = createAsyncThunk<NewsArticle[], void, { state: RootState }>(
+  "news/fetchNews",
+  async (_, { getState }) => {
+    const { searchText, currentPage } = getState().news;
+    const response = await getNews(currentPage, searchText);
+    return response.data.articles;
+  }
+);
 
 const newsSlice = createSlice({
   name: "news",
   initialState,
-  reducers: {},
+  reducers: {
+    setSearchText: (state, action: PayloadAction<string>) => {
+      state.searchText = action.payload;
+      state.currentPage = 1;
+    },
+    setCurrentPage: (state, action: PayloadAction<number>) => {
+      state.currentPage = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchNews.pending, (state) => {
@@ -40,4 +50,5 @@ const newsSlice = createSlice({
   },
 });
 
+export const { setSearchText, setCurrentPage } = newsSlice.actions;
 export default newsSlice.reducer;

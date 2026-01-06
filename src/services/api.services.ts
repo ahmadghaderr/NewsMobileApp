@@ -1,11 +1,10 @@
 import axios from "axios";
 
-const GNEWS_API_KEY = "60511e1073c51775acb66e8f220c1395"
+const GNEWS_API_KEY = "18e073f50169b31ea24c1efeefedf920"
 
-export const getNews = () => {
+export const getNews = (currentPage: number, searchQuery: string = 'Google') => {
   return axios.get(
-    `https://gnews.io/api/v4/search?q=Google&lang=en&max=400&apikey=${GNEWS_API_KEY}`
+    `https://gnews.io/api/v4/search?q=${searchQuery}&lang=en&max=10&apikey=${GNEWS_API_KEY}&page=${currentPage}`
   );
 };
-
 export default { getNews };

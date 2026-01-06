@@ -14,3 +14,11 @@ export interface NewsArticle {
   };
   publishedAt?: string;
 }
+
+export interface NewsState {
+  articles: NewsArticle[];
+  loading: boolean;
+  error: string | null;
+  searchText?: string;
+  currentPage: number;
+}
